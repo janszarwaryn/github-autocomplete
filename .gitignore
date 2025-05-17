@@ -20,7 +20,6 @@ dist-ssr
 *.sw?
 postcss.config.js
 progress.md
-README.md
 req.md
 tailwind.config.js
 tsconfig.app.json
