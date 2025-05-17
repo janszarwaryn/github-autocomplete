@@ -3,7 +3,7 @@
  * Custom hook that handles GitHub search functionality with caching and state management
  */
 import { useReducer, useEffect, useCallback } from 'react';
-import type { AutocompleteResultItem, SearchState, SearchAction } from '../components/GitHubAutocomplete/types';
+import type { SearchState, SearchAction } from '../components/GitHubAutocomplete/types';
 import { searchGitHub } from '../services/githubApi';
 import { getCachedResults, cacheResults } from '../utils/cacheUtils';
 import { useDebounce } from './useDebounce';
