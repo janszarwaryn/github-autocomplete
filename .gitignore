@@ -18,7 +18,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-postcss.config.js
 progress.md
 req.md
-tailwind.config.js
