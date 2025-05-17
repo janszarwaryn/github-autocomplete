@@ -42,14 +42,14 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           value={value}
           onChange={handleChange}
           onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-            // Obsługa wszystkich klawiszy nawigacji
+            // Handle all navigation keys
             switch (e.key) {
               case 'ArrowDown':
-                e.preventDefault(); // Zapobieganie scrollowaniu strony
+                e.preventDefault(); // Prevent page scrolling
                 if (onArrowDown) onArrowDown();
                 break;
               case 'ArrowUp':
-                e.preventDefault(); // Zapobieganie scrollowaniu strony
+                e.preventDefault(); // Prevent page scrolling
                 if (onArrowUp) onArrowUp();
                 break;
               case 'Enter':

@@ -1,163 +1,83 @@
-/**
- * useGitHubSearch hook
- * Custom hook that handles GitHub search functionality with caching and state management
- */
-import { useReducer, useEffect, useCallback } from 'react';
-import type { SearchState, SearchAction } from '../components/GitHubAutocomplete/types';
+import { useState, useEffect, useCallback } from 'react';
+import type { AutocompleteResultItem } from '../components/GitHubAutocomplete/types';
 import { searchGitHub } from '../services/githubApi';
 import { getCachedResults, cacheResults } from '../utils/cacheUtils';
-import { useDebounce } from './useDebounce';
-
-// Initial state
-const initialState: SearchState = {
-  query: '',
-  results: [],
-  isLoading: false,
-  error: null,
-  selectedIndex: -1,
-  showDropdown: false,
-};
-
-/**
- * Search reducer function
- * Handles state updates for search actions
- */
-const searchReducer = (state: SearchState, action: SearchAction): SearchState => {
-  switch (action.type) {
-    case 'SET_QUERY':
-      return {
-        ...state,
-        query: action.payload,
-        // Reset selected index when query changes
-        selectedIndex: -1,
-        // Show dropdown if query length is 3+ characters
-        showDropdown: action.payload.length >= 3,
-        // Clear error when query changes
-        error: null,
-      };
-    case 'SET_RESULTS':
-      return {
-        ...state,
-        results: action.payload,
-        isLoading: false,
-        // Ensure dropdown is visible when results arrive
-        showDropdown: action.payload.length > 0,
-      };
-    case 'SET_LOADING':
-      return {
-        ...state,
-        isLoading: action.payload,
-        // Clear errors when starting a new search
-        error: action.payload ? null : state.error,
-      };
-    case 'SET_ERROR':
-      return {
-        ...state,
-        error: action.payload,
-        isLoading: false,
-        // Keep showing dropdown to display error message
-        showDropdown: action.payload !== null,
-      };
-    case 'SET_SELECTED_INDEX':
-      return {
-        ...state,
-        selectedIndex: action.payload,
-      };
-    case 'SET_SHOW_DROPDOWN':
-      return {
-        ...state,
-        showDropdown: action.payload,
-      };
-    case 'RESET':
-      return initialState;
-    default:
-      return state;
-  }
-};
+import { useTypingAwareDebounce } from './useTypingAwareDebounce';
 
 interface UseGitHubSearchProps {
   debounceTime?: number;
+  minChars?: number;
+  typingThreshold?: number;
 }
 
-/**
- * Custom hook for GitHub search functionality
- * 
- * @param props Hook configuration props
- * @returns Search state and methods
- */
-export const useGitHubSearch = ({ debounceTime = 300 }: UseGitHubSearchProps = {}) => {
-  // Set up reducer for search state
-  const [state, dispatch] = useReducer(searchReducer, initialState);
-  
-  // Debounced query to avoid excess API calls
-  const debouncedQuery = useDebounce(state.query, debounceTime);
-  
-  /**
-   * Handle search input changes
-   */
+export const useGitHubSearch = ({ 
+  debounceTime = 1500,
+  minChars = 3,
+  typingThreshold = 500 
+}: UseGitHubSearchProps = {}) => {
+
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<AutocompleteResultItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const debouncedQuery = useTypingAwareDebounce(query, debounceTime, typingThreshold);
+
   const handleInputChange = useCallback((value: string) => {
-    dispatch({ type: 'SET_QUERY', payload: value });
+    setQuery(value);
+    setSelectedIndex(-1);
+    setError(null);
+    setShowDropdown(value.length >= minChars);
     
-    if (value.length < 3) {
-      dispatch({ type: 'SET_RESULTS', payload: [] });
+    if (value.length < minChars) {
+      setResults([]);
     }
   }, []);
 
-  /**
-   * Update selected index for keyboard navigation
-   */
-  const setSelectedIndex = useCallback((index: number) => {
-    dispatch({ type: 'SET_SELECTED_INDEX', payload: index });
-  }, []);
-
-  /**
-   * Show/hide dropdown 
-   */
-  const setShowDropdown = useCallback((show: boolean) => {
-    dispatch({ type: 'SET_SHOW_DROPDOWN', payload: show });
-  }, []);
-
-  /**
-   * Reset search state
-   */
   const resetSearch = useCallback(() => {
-    dispatch({ type: 'RESET' });
+    setQuery('');
+    setResults([]);
+    setIsLoading(false);
+    setError(null);
+    setSelectedIndex(-1);
+    setShowDropdown(false);
   }, []);
 
-  /**
-   * Handle GitHub search when query changes
-   */
   useEffect(() => {
     const performSearch = async () => {
-      const query = debouncedQuery.trim();
+      const trimmedQuery = debouncedQuery.trim();
       
-      // Only search when query is 3+ characters
-      if (query.length < 3) {
+      if (trimmedQuery.length < minChars) {
         return;
       }
 
-      // Try to get results from cache first
-      const cachedResults = getCachedResults(query);
+
+      const cachedResults = getCachedResults(trimmedQuery);
       
       if (cachedResults) {
-        dispatch({ type: 'SET_RESULTS', payload: cachedResults });
+        setResults(cachedResults);
+        setShowDropdown(cachedResults.length > 0);
         return;
       }
 
-      // No cached results, perform API search
+
       try {
-        dispatch({ type: 'SET_LOADING', payload: true });
+        setIsLoading(true);
         
-        const results = await searchGitHub(query);
+        const newResults = await searchGitHub(trimmedQuery);
         
-        dispatch({ type: 'SET_RESULTS', payload: results });
+        setResults(newResults);
+        setIsLoading(false);
+        setShowDropdown(newResults.length > 0);
         
-        // Cache results for future use
-        cacheResults(query, results);
+
+        cacheResults(trimmedQuery, newResults);
       } catch (error) {
         let errorMessage = 'An error occurred while searching';
         
-        // Provide more specific error messages
+
         if (error instanceof Error) {
           if (error.message.includes('rate limit exceeded')) {
             errorMessage = 'GitHub API rate limit exceeded. Please try again later.';
@@ -168,7 +88,9 @@ export const useGitHubSearch = ({ debounceTime = 300 }: UseGitHubSearchProps = {
           }
         }
         
-        dispatch({ type: 'SET_ERROR', payload: errorMessage });
+        setError(errorMessage);
+        setIsLoading(false);
+        setShowDropdown(true);
       }
     };
 
@@ -176,7 +98,12 @@ export const useGitHubSearch = ({ debounceTime = 300 }: UseGitHubSearchProps = {
   }, [debouncedQuery]);
 
   return {
-    ...state,
+    query,
+    results,
+    isLoading,
+    error,
+    selectedIndex,
+    showDropdown,
     handleInputChange,
     setSelectedIndex,
     setShowDropdown,

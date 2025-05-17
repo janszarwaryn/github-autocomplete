@@ -60,7 +60,9 @@ export interface AutocompleteResultItem {
 export interface GitHubAutocompleteProps {
   placeholder?: string;
   className?: string;
-  debounceTime?: number; // Default to 300ms
+  debounceTime?: number;
+  minChars?: number;
+  typingThreshold?: number;
   onSelect?: (item: AutocompleteResultItem) => void;
 }
 
