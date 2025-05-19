@@ -1,15 +1,7 @@
 import GitHubAutocomplete from './components/GitHubAutocomplete'
 import type { AutocompleteResultItem } from './components/GitHubAutocomplete/types'
 
-/**
- * App Component
- * Demo application showcasing the GitHub Autocomplete component
- */
 function App() {
-  /**
-   * Handle selection of results
-   * In a real application, this could trigger additional actions
-   */
   const handleSelect = (item: AutocompleteResultItem) => {
     console.log('Selected item:', item);
   };

@@ -1,8 +1,4 @@
-/**
- * TypeScript interfaces and types for the GitHub Autocomplete component
- */
 
-// GitHub API response interfaces
 export interface GitHubUserResponse {
   total_count: number;
   incomplete_results: boolean;
@@ -15,7 +11,7 @@ export interface GitHubRepoResponse {
   items: GitHubRepo[];
 }
 
-// GitHub user interface
+
 export interface GitHubUser {
   login: string;
   id: number;
@@ -28,7 +24,7 @@ export interface GitHubUser {
   score: number;
 }
 
-// GitHub repository interface
+
 export interface GitHubRepo {
   id: number;
   node_id: string;
@@ -46,17 +42,17 @@ export interface GitHubRepo {
   stargazers_count: number;
 }
 
-// Combined result item (either user or repo)
+
 export interface AutocompleteResultItem {
-  id: string; // Unique identifier
-  name: string; // Display name for sorting and showing
-  type: 'user' | 'repository'; // Discriminator
-  url: string; // Link to open on click/enter
-  avatarUrl: string; // Avatar or icon URL
-  description?: string; // Additional info (for repositories)
+  id: string;
+  name: string;
+  type: 'user' | 'repository';
+  url: string;
+  avatarUrl: string;
+  description?: string;
 }
 
-// Props for the main GitHubAutocomplete component
+
 export interface GitHubAutocompleteProps {
   placeholder?: string;
   className?: string;
@@ -66,7 +62,7 @@ export interface GitHubAutocompleteProps {
   onSelect?: (item: AutocompleteResultItem) => void;
 }
 
-// Props for the SearchInput component
+
 export interface SearchInputProps {
   id?: string;
   value: string;
@@ -83,7 +79,7 @@ export interface SearchInputProps {
   className?: string;
 }
 
-// Props for the DropdownList component
+
 export interface DropdownListProps {
   id?: string;
   items: AutocompleteResultItem[];
@@ -94,7 +90,7 @@ export interface DropdownListProps {
   highlightText: string;
 }
 
-// Props for individual result items
+
 export interface ResultItemProps {
   item: AutocompleteResultItem;
   isSelected: boolean;
@@ -102,7 +98,7 @@ export interface ResultItemProps {
   highlightText: string;
 }
 
-// Search state for the component
+
 export interface SearchState {
   query: string;
   results: AutocompleteResultItem[];
@@ -112,7 +108,7 @@ export interface SearchState {
   showDropdown: boolean;
 }
 
-// Search action types for reducer
+
 export type SearchAction =
   | { type: 'SET_QUERY'; payload: string }
   | { type: 'SET_RESULTS'; payload: AutocompleteResultItem[] }
@@ -122,7 +118,7 @@ export type SearchAction =
   | { type: 'SET_SHOW_DROPDOWN'; payload: boolean }
   | { type: 'RESET' };
 
-// Cache item structure for storing results
+
 export interface CacheItem {
   timestamp: number;
   results: AutocompleteResultItem[];

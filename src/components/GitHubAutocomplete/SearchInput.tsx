@@ -1,15 +1,8 @@
-/**
- * SearchInput component
- * Input field for the GitHub autocomplete component
- */
 import { forwardRef } from 'react';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import type { SearchInputProps } from './types';
 
-/**
- * SearchInput component
- * Provides the input field for searching GitHub
- */
+
 const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   ({ 
     id,
@@ -26,9 +19,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     onEscape,
     className = ''
   }, ref) => {
-    /**
-     * Handle input change
-     */
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value);
     };
@@ -42,14 +33,14 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           value={value}
           onChange={handleChange}
           onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-            // Handle all navigation keys
+
             switch (e.key) {
               case 'ArrowDown':
-                e.preventDefault(); // Prevent page scrolling
+                e.preventDefault();
                 if (onArrowDown) onArrowDown();
                 break;
               case 'ArrowUp':
-                e.preventDefault(); // Prevent page scrolling
+                e.preventDefault();
                 if (onArrowUp) onArrowUp();
                 break;
               case 'Enter':
@@ -88,7 +79,6 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   }
 );
 
-// Set display name for debugging
 SearchInput.displayName = 'SearchInput';
 
 export default SearchInput;

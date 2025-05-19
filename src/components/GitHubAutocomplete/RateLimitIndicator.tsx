@@ -23,7 +23,7 @@ const ResetTimer: React.FC<ResetButtonProps> = ({ resetTimestamp, resetTimeStrin
         return;
       }
       
-      // Format remaining time in minutes and seconds
+
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
       
@@ -34,7 +34,7 @@ const ResetTimer: React.FC<ResetButtonProps> = ({ resetTimestamp, resetTimeStrin
       }
     };
 
-    // Calculate immediately and then every second
+
     calculateTimeRemaining();
     const intervalId = setInterval(calculateTimeRemaining, 1000);
 

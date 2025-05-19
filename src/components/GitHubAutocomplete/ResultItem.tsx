@@ -1,22 +1,15 @@
-/**
- * ResultItem component
- * Renders an individual result item in the dropdown list
- */
 import React from 'react';
 import type { ResultItemProps } from './types';
 import { highlightText } from '../../utils/highlightText';
 
-/**
- * ResultItem component
- * Displays a single GitHub search result (user or repository)
- */
+
 const ResultItem: React.FC<ResultItemProps> = ({
   item,
   isSelected,
   onSelect,
   highlightText: query,
 }) => {
-  // Type-specific icon element
+
   const iconElement = item.type === 'user' ? (
     <svg className="w-5 h-5 flex-shrink-0 mr-3 text-github-secondary" aria-hidden="true" viewBox="0 0 16 16" fill="currentColor">
       <path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14a6 6 0 01-3.81-1.36C4.57 11.46 6.17 11 8 11c1.82 0 3.43.46 3.81 1.64A6 6 0 018 14zm0-8a2 2 0 100 4 2 2 0 000-4zm0 6a4 4 0 110-8 4 4 0 010 8z" />

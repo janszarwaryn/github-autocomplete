@@ -53,7 +53,6 @@ export const useGitHubSearch = ({
         return;
       }
 
-
       const cachedResults = getCachedResults(trimmedQuery);
       
       if (cachedResults) {
@@ -61,7 +60,6 @@ export const useGitHubSearch = ({
         setShowDropdown(cachedResults.length > 0);
         return;
       }
-
 
       try {
         setIsLoading(true);
@@ -72,12 +70,10 @@ export const useGitHubSearch = ({
         setIsLoading(false);
         setShowDropdown(newResults.length > 0);
         
-
         cacheResults(trimmedQuery, newResults);
       } catch (error) {
         let errorMessage = 'An error occurred while searching';
         
-
         if (error instanceof Error) {
           if (error.message.includes('rate limit exceeded')) {
             errorMessage = 'GitHub API rate limit exceeded. Please try again later.';

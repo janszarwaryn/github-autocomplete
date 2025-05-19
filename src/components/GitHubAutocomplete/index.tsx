@@ -81,13 +81,10 @@ const GitHubAutocomplete: React.FC<GitHubAutocompleteProps> = ({
 
   const searchResultsId = "github-search-results";
   const activeDescendant = selectedIndex >= 0 && results.length > 0 ? `github-result-${results[selectedIndex].id}` : "";
-
-  // State to show/hide the API config panel
   const [showApiConfig, setShowApiConfig] = useState(false);
 
   return (
     <div className={`w-full max-w-[500px] mx-auto ${className}`}>
-      {/* API configuration toggle button */}
       <div className="text-right mb-2">
         <button
           type="button"
@@ -97,8 +94,6 @@ const GitHubAutocomplete: React.FC<GitHubAutocompleteProps> = ({
           {showApiConfig ? 'Hide API Settings' : 'API Settings'}
         </button>
       </div>
-
-      {/* API configuration component */}
       {showApiConfig && <GitHubApiConfig />}
 
       <search className="relative w-full" ref={containerRef} data-testid="github-autocomplete">

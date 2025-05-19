@@ -1,15 +1,7 @@
-/**
- * DropdownList component
- * Displays search results, loading state, and error messages
- */
 import React, { useEffect, useRef } from 'react';
 import type { DropdownListProps } from './types';
 import ResultItem from './ResultItem';
 
-/**
- * DropdownList component
- * Container for search results with states for loading, errors, and empty results
- */
 const DropdownList: React.FC<DropdownListProps> = ({
   id,
   items,
@@ -19,20 +11,14 @@ const DropdownList: React.FC<DropdownListProps> = ({
   onSelect,
   highlightText,
 }) => {
-  // Referencja do kontenera przewijanej listy
+
   const listContainerRef = useRef<HTMLUListElement>(null);
   
-  /**
-   * Efekt dla automatycznego przewijania do zaznaczonego elementu
-   */
   useEffect(() => {
     if (selectedIndex >= 0 && items.length > 0 && !isLoading) {
-      // Znajdź zaznaczony element przez ID
       const selectedElement = document.getElementById(`github-result-${items[selectedIndex].id}`);
       
-      // Jeśli element istnieje, przewiń do niego
       if (selectedElement && listContainerRef.current) {
-        // Użyj scrollIntoView z opcją 'nearest', aby przewijać tylko gdy to konieczne
         selectedElement.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest'
@@ -41,11 +27,7 @@ const DropdownList: React.FC<DropdownListProps> = ({
     }
   }, [selectedIndex, items, isLoading]);
 
-  /**
-   * Determine and render appropriate content based on state
-   */
   const renderContent = () => {
-    // Loading state
     if (isLoading) {
       return (
         <div className="flex flex-col items-center justify-center py-6 text-github-secondary" data-testid="loading-state">
@@ -55,7 +37,6 @@ const DropdownList: React.FC<DropdownListProps> = ({
       );
     }
     
-    // Error state
     if (error) {
       return (
         <div className="flex flex-col items-center justify-center py-6 text-github-error bg-github-error-bg" data-testid="error-state">
@@ -67,7 +48,6 @@ const DropdownList: React.FC<DropdownListProps> = ({
       );
     }
     
-    // No results state
     if (items.length === 0) {
       return (
         <div className="flex items-center justify-center py-6 text-github-secondary" data-testid="no-results-state">
@@ -76,7 +56,6 @@ const DropdownList: React.FC<DropdownListProps> = ({
       );
     }
     
-    // Results list
     return (
       <ul 
         ref={listContainerRef} 

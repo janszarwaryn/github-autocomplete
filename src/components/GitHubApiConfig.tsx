@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { configureGitHubApi } from '../services/githubApi';
 
-// Local storage key for the token
 const TOKEN_STORAGE_KEY = 'github_api_token';
 
 interface GitHubApiConfigProps {
@@ -13,7 +12,7 @@ const GitHubApiConfig: React.FC<GitHubApiConfigProps> = ({ className = '' }) => 
   const [isConfigured, setIsConfigured] = useState<boolean>(false);
   const [showToken, setShowToken] = useState<boolean>(false);
 
-  // Load token from localStorage on component mount
+
   useEffect(() => {
     const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (savedToken) {

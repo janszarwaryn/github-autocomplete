@@ -1,10 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
-
 
 const RATE_LIMIT_KEY = 'github_rate_limit_info';
 const RATE_LIMIT_EXCEEDED_KEY = 'github_rate_limit_exceeded';
-
 
 export interface RateLimitInfo {
   limit: number;
@@ -17,7 +14,6 @@ export interface RateLimitInfo {
 
 type RateLimitCallback = (info: RateLimitInfo) => void;
 
-
 let rateLimitSubscribers: RateLimitCallback[] = [];
 let isRateLimitExceeded = false;
 let currentRateLimit: RateLimitInfo = {
@@ -28,7 +24,6 @@ let currentRateLimit: RateLimitInfo = {
   isSearchAPI: true,
   exceeded: false
 };
-
 
 const saveRateLimitToStorage = (info: RateLimitInfo, exceeded: boolean): void => {
   try {
@@ -86,7 +81,6 @@ const checkAndResetRateLimit = (): boolean => {
       localStorage.removeItem(RATE_LIMIT_KEY);
       localStorage.removeItem(RATE_LIMIT_EXCEEDED_KEY);
     } catch (error) {
-  
     }
     
     notifySubscribers();
@@ -102,8 +96,6 @@ const notifySubscribers = () => {
     callback({ ...currentRateLimit });
   });
 };
-
-
 const { info: storedRateLimit, exceeded: storedExceeded } = loadRateLimitFromStorage();
 if (storedRateLimit) {
   currentRateLimit = storedRateLimit;
@@ -118,9 +110,7 @@ if (storedRateLimit) {
   }
 }
 
-
 let resetCheckInterval: number | null = null;
-
 
 const startResetCheckInterval = () => {
   if (resetCheckInterval === null) {
@@ -129,13 +119,8 @@ const startResetCheckInterval = () => {
     }, 1000) as unknown as number;
   }
 };
-
-
 startResetCheckInterval();
 checkAndResetRateLimit();
-
-
-
 
 export const subscribeToRateLimitChanges = (callback: RateLimitCallback): () => void => {
   rateLimitSubscribers.push(callback);
@@ -189,15 +174,12 @@ export const setRateLimitExceeded = (exceeded: boolean = true): void => {
 
 
 export const extractRateLimitInfo = (response: Response): void => {
-
   const currentRemaining = currentRateLimit.remaining;
   const newRemaining = Math.max(0, currentRemaining - 1);
   
-
   const requestUrl = response.url || '';
   const isSearchRequest = requestUrl.includes('/search/');
   
-
   const rateLimitLimit = response.headers.get('x-ratelimit-limit');
   const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
   const rateLimitReset = response.headers.get('x-ratelimit-reset');
@@ -207,11 +189,9 @@ export const extractRateLimitInfo = (response: Response): void => {
     const remaining = parseInt(rateLimitRemaining, 10);
     const reset = parseInt(rateLimitReset, 10);
     
-
     const resetDate = new Date(reset * 1000);
     const resetTimeString = resetDate.toLocaleTimeString();
     
-
     const actualRemaining = Math.min(newRemaining, remaining);
     
     updateRateLimitInfo({
@@ -223,7 +203,6 @@ export const extractRateLimitInfo = (response: Response): void => {
       exceeded: actualRemaining <= 0
     });
   } else {
-
     updateRateLimitInfo({
       remaining: newRemaining,
       isSearchAPI: isSearchRequest,

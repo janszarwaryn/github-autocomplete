@@ -1,18 +1,7 @@
-/**
- * Cache utilities for storing search results
- * Reduces unnecessary API calls by caching previous search results
- */
 import type { AutocompleteResultItem, CacheItem } from '../components/GitHubAutocomplete/types';
 
-// Cache expiration time in milliseconds (24 godziny dla zmniejszenia liczby zapytań API)
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
 
-/**
- * Store search results in local storage
- * 
- * @param query Search query
- * @param results Search results
- */
 export const cacheResults = (query: string, results: AutocompleteResultItem[]): void => {
   try {
     const cacheItem: CacheItem = {
@@ -23,16 +12,8 @@ export const cacheResults = (query: string, results: AutocompleteResultItem[]): 
     localStorage.setItem(`github-search-${query}`, JSON.stringify(cacheItem));
   } catch (error) {
     console.warn('Error caching results:', error);
-    // Fail silently - caching is an optimization, not a critical feature
   }
 };
-
-/**
- * Retrieve cached search results
- * 
- * @param query Search query
- * @returns Cached results or null if not found or expired
- */
 export const getCachedResults = (query: string): AutocompleteResultItem[] | null => {
   try {
     const cachedData = localStorage.getItem(`github-search-${query}`);
@@ -44,9 +25,7 @@ export const getCachedResults = (query: string): AutocompleteResultItem[] | null
     const cacheItem: CacheItem = JSON.parse(cachedData);
     const now = Date.now();
     
-    // Check if cache is expired
     if (now - cacheItem.timestamp > CACHE_EXPIRATION) {
-      // Clean up expired cache
       localStorage.removeItem(`github-search-${query}`);
       return null;
     }
@@ -58,14 +37,11 @@ export const getCachedResults = (query: string): AutocompleteResultItem[] | null
   }
 };
 
-/**
- * Clear all cached search results
- */
+
 export const clearCache = (): void => {
   try {
     const keysToRemove: string[] = [];
     
-    // Find all cached search keys
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('github-search-')) {
@@ -73,19 +49,12 @@ export const clearCache = (): void => {
       }
     }
     
-    // Remove all found keys
     keysToRemove.forEach(key => localStorage.removeItem(key));
   } catch (error) {
     console.warn('Error clearing cache:', error);
   }
 };
-
-/**
- * Dane fallbackowe do użycia gdy limit API GitHub zostanie wyczerpany
- * Zapewnia podstawowe wyniki dla popularnych wyszukiwań, aby uniknąć pustego interfejsu
- */
 const FALLBACK_RESULTS: Record<string, AutocompleteResultItem[]> = {
-  // Przykładowe wyniki dla "react"
   'react': [
     {
       id: 'repo-10270250',
@@ -111,7 +80,6 @@ const FALLBACK_RESULTS: Record<string, AutocompleteResultItem[]> = {
       avatarUrl: 'https://avatars.githubusercontent.com/u/1566403?v=4',
     },
   ],
-  // Przykładowe wyniki dla "javascript"
   'javascript': [
     {
       id: 'repo-1062897',
@@ -130,26 +98,16 @@ const FALLBACK_RESULTS: Record<string, AutocompleteResultItem[]> = {
     },
   ],
 };
-
-/**
- * Pobierz dane fallbackowe dla danego zapytania
- * 
- * @param query Zapytanie wyszukiwania
- * @returns Dane fallbackowe lub pustą tablice jeśli nie znaleziono
- */
 export const getFallbackResults = (query: string): AutocompleteResultItem[] => {
-  // Sprawdzenie czy mamy dokładne dopasowanie
   if (FALLBACK_RESULTS[query]) {
     return FALLBACK_RESULTS[query];
   }
   
-  // Sprawdzenie czy mamy częściowe dopasowanie
   for (const key of Object.keys(FALLBACK_RESULTS)) {
     if (query.includes(key) || key.includes(query)) {
       return FALLBACK_RESULTS[key];
     }
   }
   
-  // Brak dopasowania, zwracamy pustą tablicę
   return [];
 };
